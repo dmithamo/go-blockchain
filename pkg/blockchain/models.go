@@ -9,6 +9,10 @@ import (
 // BPM - beats per minute - is the type of the 'actual' data stored on a Block
 type BPM int
 
+type RecordParams struct {
+	BPM int `json:"bpm,omitempty"`
+}
+
 // Record defines a data record stored on the blockchain
 type Record struct {
 	Index     int       // index of this record on the chain
@@ -19,8 +23,8 @@ type Record struct {
 }
 
 // computeOwnHash generates the unique hash for a record
-func (b *Record) computeOwnHash() error {
-	record := fmt.Sprintf("%d%d%d%s", b.Index, b.Timestamp.Unix(), b.BPM, b.PrevHash)
+func (r *Record) computeOwnHash() error {
+	record := fmt.Sprintf("%d::%d::%d::%s", r.Index, r.Timestamp.Unix(), r.BPM, r.PrevHash)
 
 	// initialize hasher
 	h := sha256.New()
@@ -30,6 +34,6 @@ func (b *Record) computeOwnHash() error {
 		return err
 	}
 
-	b.Hash = string(h.Sum(nil))
+	r.Hash = string(h.Sum(nil))
 	return nil
 }
